@@ -19,16 +19,16 @@ cd /tmp
 rm -rf *
 cd ${OPENSHIFT_REPO_DIR}.openshift/action_hooks
 rm -rf start
-wget --no-check-certificate https://raw.githubusercontent.com/tcpit/nginx-proxy-openshift/master/start
+wget --no-check-certificate https://raw.githubusercontent.com/tcpit/openshift-nginx-proxy/master/start
 chmod 755 start
 cd ${OPENSHIFT_REPO_DIR}.openshift/cron/minutely
 rm -rf restart.sh
-wget --no-check-certificate https://raw.githubusercontent.com/tcpit/nginx-proxy-openshift/master/restart.sh
+wget --no-check-certificate https://raw.githubusercontent.com/tcpit/openshift-nginx-proxy/master/restart.sh
 chmod 755 restart.sh
 touch nohup.out
 chmod 755 nohup.out
 rm -rf delete_log.sh
-wget --no-check-certificate https://raw.githubusercontent.com/tcpit/nginx-proxy-openshift/master/delete_log.sh
+wget --no-check-certificate https://raw.githubusercontent.com/tcpit/openshift-nginx-proxy/master/delete_log.sh
 chmod 755 delete_log.sh
 gear stop
 gear start
