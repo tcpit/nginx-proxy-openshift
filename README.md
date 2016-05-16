@@ -13,6 +13,6 @@ When the script ends running, find the `OPENSHIFT_DIY_IP` of the application via
 8. `rm -rf nginx.conf`
 9. `wget https://raw.githubusercontent.com/tcpit/nginx-proxy-openshift/master/nginx.conf`
 10. Replace the `OPENSHIFT_DIY_IP` in the conf (two places: 1st is in `listen OPENSHIFT_DIY_IP:8080;`, 2nd is in `fastcgi_pass OPENSHIFT_DIY_IP:9000;`)
-11. Replace `proxy_cookie_domain google.com xxx-xxx.rhcloud.com` and `server_name xxx-xxx.rhcloud.com;` to your application domain (xxx-xxx.rhcloud.com) in `nginx.conf` 
+11. Replace `xxx-xxx.rhcloud.com` to your application domain (xxx-xxx.rhcloud.com) in `nginx.conf` 
 12. `pkill -9 nginx`
 13. `app-root/data/sbin/./nginx`
