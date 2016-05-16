@@ -12,8 +12,6 @@ if [ $s != 0 ];
 		echo "`date +"%Y-%m-%d %H:%M:%S"` restarting..." >> ${OPENSHIFT_LOG_DIR}web_error.log
 		killall nginx
 		nohup ${OPENSHIFT_DATA_DIR}/sbin/nginx > ${OPENSHIFT_LOG_DIR}/server.log 2>&1 &
-		killall php-fpm
-		nohup ${OPENSHIFT_DATA_DIR}/sbin/php-fpm &
 		#/usr/bin/gear start 2>&1 /dev/null
 		echo "`date +"%Y-%m-%d %H:%M:%S"` restarted!!!" >> ${OPENSHIFT_LOG_DIR}web_error.log		
 else
