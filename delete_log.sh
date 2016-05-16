@@ -16,10 +16,6 @@ then
   cd ${OPENSHIFT_DATA_DIR}/logs
   rm -rf *.log
   echo "delete nginx logs at $(date) ..." >&2
-  sleep 1
-  cd ${OPENSHIFT_DATA_DIR}/var/log
-  rm -rf *.log
-  echo "delete php-fpm logs at $(date) ..." >&2
   ) &
   exit
 fi
