@@ -19,16 +19,69 @@ cd /tmp
 rm -rf *
 cd ${OPENSHIFT_REPO_DIR}.openshift/action_hooks
 rm -rf start
-wget --no-check-certificate https://raw.githubusercontent.com/tcpit/openshift-nginx-proxy/master/start
+cat>start<<EOF
+#!/bin/bash
+# The logic to start up your application should be put in this
+# script. The application will work only if it binds to
+# \$OPENSHIFT_DIY_IP:8080
+#nohup \$OPENSHIFT_REPO_DIR/diy/testrubyserver.rb \$OPENSHIFT_DIY_IP \$OPENSHIFT_REPO_DIR/diy |& /usr/bin/logshifter -tag diy &
+nohup \$OPENSHIFT_DATA_DIR/sbin/nginx > \$OPENSHIFT_LOG_DIR/server.log 2>&1 &
+EOF
 chmod 755 start
 cd ${OPENSHIFT_REPO_DIR}.openshift/cron/minutely
 rm -rf restart.sh
-wget --no-check-certificate https://raw.githubusercontent.com/tcpit/openshift-nginx-proxy/master/restart.sh
+cat>restart.sh<<EOF
+#!/bin/bash
+export TZ='Asia/Shanghai'
+
+curl -I \${OPENSHIFT_APP_DNS} 2> /dev/null | head -1 | grep -q '200\|301\|302\|404\|403'
+
+s=\$?
+
+if [ \$s != 0 ];
+	then
+		echo "`date +"%Y-%m-%d %H:%M:%S"` down" >> \${OPENSHIFT_LOG_DIR}web_error.log
+		echo "`date +"%Y-%m-%d %H:%M:%S"` restarting..." >> \${OPENSHIFT_LOG_DIR}web_error.log
+		killall nginx
+		nohup \${OPENSHIFT_DATA_DIR}/sbin/nginx > \${OPENSHIFT_LOG_DIR}/server.log 2>&1 &
+		#/usr/bin/gear start 2>&1 /dev/null
+		echo "`date +"%Y-%m-%d %H:%M:%S"` restarted!!!" >> \${OPENSHIFT_LOG_DIR}web_error.log		
+else
+	echo "`date +"%Y-%m-%d %H:%M:%S"` is ok" > \${OPENSHIFT_LOG_DIR}web_run.log
+fi
+EOF
 chmod 755 restart.sh
 touch nohup.out
 chmod 755 nohup.out
 rm -rf delete_log.sh
-wget --no-check-certificate https://raw.githubusercontent.com/tcpit/openshift-nginx-proxy/master/delete_log.sh
+cat>delete_log.sh<<EOF
+#!/bin/bash
+export TZ="Asia/Shanghai"
+
+# 每天 00:30 06:30 12:30 18:30 删除一次网站日志
+hour="`date +%H%M`"
+if [ "\$hour" = "0030" -o "\$hour" = "0630" -o "\$hour" = "1230" -o "\$hour" = "1830" ]
+then
+  echo "Scheduled delete at \$(date) ..." >&2
+  (
+  sleep 1
+  cd \${OPENSHIFT_LOG_DIR}
+  rm -rf *
+  echo "delete OPENSHIFT_LOG at \$(date) ..." >&2
+  sleep 1
+  cd \${OPENSHIFT_DATA_DIR}/logs
+  rm -rf *.log
+  echo "delete nginx logs at \$(date) ..." >&2
+  ) &
+  exit
+fi
+EOF
 chmod 755 delete_log.sh
+
+cd $OPENSHIFT_DATA_DIR/conf
+rm nginx.conf
+wget --no-check-certificate https://github.com/tcpit/openshift-nginx-proxy/raw/master/nginx.conf
+sed -i "s/OPENSHIFT_DIY_IP/$OPENSHIFT_DIY_IP/g" nginx.conf
+sed -i "s/xxx-xxx.rhcloud.com/$OPENSHIFT_APP_DNS/g" nginx.conf
 gear stop
 gear start
