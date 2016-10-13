@@ -1,13 +1,14 @@
 #!/bin/bash
 
-NGINX_VERSION='1.11.1'
-PCRE_VERSION='8.38'
+NGINX_VERSION='1.11.5'
+PCRE_VERSION='8.39'
 
 cd $OPENSHIFT_TMP_DIR
 
 wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz
 tar xzf nginx-${NGINX_VERSION}.tar.gz
-wget http://exim.mirror.fr/pcre/pcre-${PCRE_VERSION}.tar.gz
+wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-${PCRE_VERSION}.tar.gz
+#http://exim.mirror.fr/pcre/pcre-${PCRE_VERSION}.tar.gz
 tar xzf pcre-${PCRE_VERSION}.tar.gz
 git clone https://github.com/FRiCKLE/ngx_cache_purge.git
 git clone https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git
